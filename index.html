@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Hackathon Team Matcher — Build Balanced Teams</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Background decorative glowing orbs -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+  <!-- Navigation / Top bar -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <div class="brand">
+        <span class="brand-icon">⚡</span>
+        <span class="brand-name">HackMatch<span class="brand-dot">.ai</span></span>
+        <span class="ai-badge">Simulated AI Engine</span>
+      </div>
+      <div class="nav-actions">
+        <button id="quick-demo-btn" class="btn btn-secondary btn-sm" title="Populate 12 realistic hackathon participants">
+          <span>✨</span> Load Demo Hackers
+        </button>
+        <button id="clear-all-nav-btn" class="btn btn-ghost btn-sm" title="Remove all participants and teams">
+          <span>🗑️</span> Reset All
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Hero Header Section -->
+    <section class="hero-section">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span> Smart Hackathon Organizer Studio
+      </div>
+      <h1 class="hero-title">AI Hackathon Team Matcher</h1>
+      <p class="hero-subtitle">
+        Build balanced teams. Find the right teammates. Start hacking.
+      </p>
+
+      <!-- Live Organizer Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-content">
+            <span class="stat-value" id="stat-total-participants">0</span>
+            <span class="stat-label">Participants</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛡️</div>
+          <div class="stat-content">
+            <span class="stat-value" id="stat-total-teams">0</span>
+            <span class="stat-label">Teams Formed</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚖️</div>
+          <div class="stat-content">
+            <span class="stat-value" id="stat-balance-score">--</span>
+            <span class="stat-label">AI Balance Score</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-content">
+            <span class="stat-value" id="stat-roles-diversity">0 / 4</span>
+            <span class="stat-label">Core Roles Covered</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- App Content Layout: Two-Column Layout on Desktop -->
+    <div class="workspace-grid">
+      <!-- Left Column: Registration & Team Settings -->
+      <div class="workspace-sidebar">
+
+        <!-- 1. Participant Registration Card -->
+        <section class="glass-card" id="registration-section">
+          <div class="card-header">
+            <div class="header-title-group">
+              <span class="header-icon">📝</span>
+              <div>
+                <h2 class="card-title" id="form-card-title">Participant Registration</h2>
+                <p class="card-desc">Enter hacker profile, skills, and preferences</p>
+              </div>
+            </div>
+            <span class="badge" id="form-mode-badge">New Entry</span>
+          </div>
+
+          <form id="participant-form" class="participant-form" novalidate>
+            <input type="hidden" id="participant-id">
+
+            <!-- Full Name -->
+            <div class="form-group">
+              <label for="name" class="form-label">
+                Full Name <span class="required">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input 
+                  type="text" 
+                  id="name" 
+                  name="name" 
+                  class="form-control" 
+                  placeholder="e.g. Rahul Sharma" 
+                  required
+                  autocomplete="off"
+                >
+              </div>
+              <span class="form-error" id="name-error"></span>
+            </div>
+
+            <!-- Email & Phone Grid -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  Email Address <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📧</span>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-control" 
+                    placeholder="rahul@example.com" 
+                    required
+                    autocomplete="off"
+                  >
+                </div>
+                <span class="form-error" id="email-error"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="phone" class="form-label">
+                  Phone Number <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📱</span>
+                  <input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone" 
+                    class="form-control" 
+                    placeholder="+91 98765 43210" 
+                    required
+                    autocomplete="off"
+                  >
+                </div>
+                <span class="form-error" id="phone-error"></span>
+              </div>
+            </div>
+
+            <!-- Preferred Role & Experience Grid -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="role" class="form-label">
+                  Preferred Role <span class="required">*</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="role" name="role" class="form-control" required>
+                    <option value="" disabled selected>Select Primary Role</option>
+                    <option value="Frontend">Frontend Developer</option>
+                    <option value="Backend">Backend Developer</option>
+                    <option value="AI/ML">AI / ML Engineer</option>
+                    <option value="UI/UX">UI / UX Designer</option>
+                    <option value="Full Stack">Full Stack Developer</option>
+                    <option value="Mobile">Mobile Developer</option>
+                    <option value="DevOps/Cloud">DevOps / Cloud</option>
+                    <option value="Other">Other Technical</option>
+                  </select>
+                </div>
+                <span class="form-error" id="role-error"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="experience" class="form-label">
+                  Experience Level <span class="required">*</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="experience" name="experience" class="form-control" required>
+                    <option value="" disabled selected>Select Experience</option>
+                    <option value="Beginner">Beginner (1st / 2nd Hackathon)</option>
+                    <option value="Intermediate">Intermediate (Building Projects)</option>
+                    <option value="Advanced">Advanced (Hackathon Veteran / Pro)</option>
+                  </select>
+                </div>
+                <span class="form-error" id="experience-error"></span>
+              </div>
+            </div>
+
+            <!-- Technical Skills -->
+            <div class="form-group">
+              <label for="skills" class="form-label">
+                Technical Skills <span class="required">*</span>
+                <span class="label-hint">(Separate with commas or click suggestions)</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">💻</span>
+                <input 
+                  type="text" 
+                  id="skills" 
+                  name="skills" 
+                  class="form-control" 
+                  placeholder="e.g. React, TypeScript, Python, Tailwind" 
+                  required
+                  autocomplete="off"
+                >
+              </div>
+              <!-- Skill Suggestion Chips -->
+              <div class="quick-chips-wrapper">
+                <span class="chip-label">Quick add:</span>
+                <div class="quick-chips" id="skill-chips">
+                  <button type="button" class="quick-chip" data-skill="React">React</button>
+                  <button type="button" class="quick-chip" data-skill="Node.js">Node.js</button>
+                  <button type="button" class="quick-chip" data-skill="Python">Python</button>
+                  <button type="button" class="quick-chip" data-skill="PyTorch">PyTorch</button>
+                  <button type="button" class="quick-chip" data-skill="Figma">Figma</button>
+                  <button type="button" class="quick-chip" data-skill="FastAPI">FastAPI</button>
+                  <button type="button" class="quick-chip" data-skill="MongoDB">MongoDB</button>
+                  <button type="button" class="quick-chip" data-skill="Flutter">Flutter</button>
+                </div>
+              </div>
+              <span class="form-error" id="skills-error"></span>
+            </div>
+
+            <!-- Domain Interests -->
+            <div class="form-group">
+              <label for="interests" class="form-label">
+                Hackathon Track / Interests <span class="required">*</span>
+                <span class="label-hint">(Domains they want to build in)</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">💡</span>
+                <input 
+                  type="text" 
+                  id="interests" 
+                  name="interests" 
+                  class="form-control" 
+                  placeholder="e.g. Healthcare, FinTech, EdTech, Web3, Climate" 
+                  required
+                  autocomplete="off"
+                >
+              </div>
+              <!-- Interest Suggestion Chips -->
+              <div class="quick-chips-wrapper">
+                <span class="chip-label">Tracks:</span>
+                <div class="quick-chips" id="interest-chips">
+                  <button type="button" class="quick-chip interest-chip" data-interest="AI / GenAI">AI / GenAI</button>
+                  <button type="button" class="quick-chip interest-chip" data-interest="FinTech">FinTech</button>
+                  <button type="button" class="quick-chip interest-chip" data-interest="HealthTech">HealthTech</button>
+                  <button type="button" class="quick-chip interest-chip" data-interest="EdTech">EdTech</button>
+                  <button type="button" class="quick-chip interest-chip" data-interest="ClimateTech">ClimateTech</button>
+                  <button type="button" class="quick-chip interest-chip" data-interest="Open Innovation">Open Innovation</button>
+                </div>
+              </div>
+              <span class="form-error" id="interests-error"></span>
+            </div>
+
+            <!-- Form Action Buttons -->
+            <div class="form-actions">
+              <button type="submit" id="submit-participant-btn" class="btn btn-primary btn-block">
+                <span class="btn-icon">➕</span>
+                <span id="submit-btn-text">Add Participant</span>
+              </button>
+              <button type="button" id="cancel-edit-btn" class="btn btn-ghost btn-block hidden">
+                <span>✕</span> Cancel Edit
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- 2. Team Settings Section -->
+        <section class="glass-card" id="team-settings-section">
+          <div class="card-header">
+            <div class="header-title-group">
+              <span class="header-icon">⚙️</span>
+              <div>
+                <h2 class="card-title">Team Formation Settings</h2>
+                <p class="card-desc">Configure parameters for the AI matching algorithm</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Matching Strategy Mode -->
+          <div class="settings-form">
+            <label class="form-label">Formation Strategy</label>
+            <div class="strategy-toggle">
+              <label class="strategy-option">
+                <input type="radio" name="strategyMode" value="teamCount" checked id="mode-team-count">
+                <div class="strategy-card">
+                  <span class="strategy-icon">🔢</span>
+                  <div class="strategy-text">
+                    <span class="strategy-title">Number of Teams</span>
+                    <span class="strategy-sub">Divide all into N teams</span>
+                  </div>
+                </div>
+              </label>
+
+              <label class="strategy-option">
+                <input type="radio" name="strategyMode" value="maxMembers" id="mode-max-members">
+                <div class="strategy-card">
+                  <span class="strategy-icon">👥</span>
+                  <div class="strategy-text">
+                    <span class="strategy-title">Max Members / Team</span>
+                    <span class="strategy-sub">Cap each team at K size</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <!-- Numeric Setting Input -->
+            <div class="form-group setting-number-group">
+              <div class="setting-header-inline">
+                <label id="setting-value-label" for="setting-value-input" class="form-label">
+                  Desired Number of Teams:
+                </label>
+                <span class="setting-value-display" id="setting-value-display">3</span>
+              </div>
+              
+              <div class="slider-wrapper">
+                <input 
+                  type="range" 
+                  id="setting-range-slider" 
+                  min="2" 
+                  max="10" 
+                  value="3" 
+                  class="range-slider"
+                >
+                <div class="range-labels">
+                  <span id="range-min-label">2</span>
+                  <span id="range-max-label">10</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Projection Banner -->
+            <div class="projection-box" id="team-projection-banner">
+              <span class="projection-icon">ℹ️</span>
+              <span class="projection-text" id="team-projection-text">
+                Add at least 2 participants to configure team formation.
+              </span>
+            </div>
+
+            <!-- Simulated AI Heuristic Explanation Notice -->
+            <div class="ai-info-callout">
+              <div class="callout-header">
+                <span class="callout-sparkle">🤖</span>
+                <strong>Simulated AI Matching Logic</strong>
+              </div>
+              <p class="callout-body">
+                Our heuristic engine balances 4 dimensions: <strong>Role Diversity</strong> (Frontend + Backend + AI/ML + UI/UX), <strong>Experience Equilibrium</strong> (mentorship blend), <strong>Skill Synergy</strong>, and <strong>Shared Track Interests</strong>.
+              </p>
+            </div>
+
+            <!-- Generate Teams Button -->
+            <button id="generate-teams-btn" class="btn btn-magic btn-block" disabled>
+              <span class="magic-icon">🤖</span>
+              <span>Generate Balanced Teams</span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Participant Directory & Team Results -->
+      <div class="workspace-main">
+
+        <!-- Participant Roster View -->
+        <section class="glass-card" id="roster-section">
+          <div class="card-header roster-header">
+            <div class="header-title-group">
+              <span class="header-icon">📋</span>
+              <div>
+                <h2 class="card-title">
+                  Participant Directory 
+                  <span class="counter-pill" id="roster-count-pill">0</span>
+                </h2>
+                <p class="card-desc">Registered hackers ready to be matched</p>
+              </div>
+            </div>
+
+            <!-- Roster Controls -->
+            <div class="roster-toolbar">
+              <!-- Search box -->
+              <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input 
+                  type="text" 
+                  id="roster-search" 
+                  placeholder="Search name, skill, role..." 
+                  class="search-input"
+                  autocomplete="off"
+                >
+              </div>
+
+              <!-- Role filter -->
+              <select id="roster-role-filter" class="filter-select">
+                <option value="ALL">All Roles</option>
+                <option value="Frontend">Frontend</option>
+                <option value="Backend">Backend</option>
+                <option value="AI/ML">AI / ML</option>
+                <option value="UI/UX">UI / UX</option>
+                <option value="Full Stack">Full Stack</option>
+                <option value="Mobile">Mobile</option>
+                <option value="DevOps/Cloud">DevOps</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <!-- View mode toggle -->
+              <div class="view-toggle">
+                <button id="view-cards-btn" class="view-btn active" title="Grid View">🔲</button>
+                <button id="view-table-btn" class="view-btn" title="Table View">☰</button>
+              </div>
+
+              <!-- Clear all button -->
+              <button id="clear-participants-btn" class="btn btn-ghost btn-danger-ghost btn-sm" title="Clear all participants">
+                <span>🗑️</span> Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- Role Distribution Quick Stats Bar -->
+          <div class="role-pills-bar" id="role-breakdown-bar">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Participants Container (Grid or Table) -->
+          <div id="roster-container" class="roster-content">
+            <!-- Empty state shown by default -->
+            <div class="empty-state" id="roster-empty-state">
+              <div class="empty-illustration">👥</div>
+              <h3 class="empty-title">No participants added yet</h3>
+              <p class="empty-desc">
+                Fill in the registration form on the left or click below to populate instant demo participants.
+              </p>
+              <button id="empty-state-demo-btn" class="btn btn-secondary">
+                <span>✨</span> Load 12 Sample Hackers
+              </button>
+            </div>
+
+            <!-- Grid container -->
+            <div id="participants-grid" class="participants-grid hidden"></div>
+
+            <!-- Table container -->
+            <div id="participants-table-wrapper" class="participants-table-wrapper hidden">
+              <table class="participants-table">
+                <thead>
+                  <tr>
+                    <th>Participant</th>
+                    <th>Role</th>
+                    <th>Experience</th>
+                    <th>Key Skills</th>
+                    <th>Track Interests</th>
+                    <th>Contact</th>
+                    <th class="actions-header">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="participants-table-body">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Team Results Section -->
+        <section class="glass-card" id="results-section">
+          <div class="card-header results-header">
+            <div class="header-title-group">
+              <span class="header-icon">🏆</span>
+              <div>
+                <h2 class="card-title">
+                  Matched Hackathon Teams
+                  <span class="counter-pill team-pill" id="results-team-count-pill">0</span>
+                </h2>
+                <p class="card-desc">AI-balanced squads optimized for complementary skills</p>
+              </div>
+            </div>
+
+            <!-- Global Team Actions -->
+            <div class="team-results-actions" id="team-results-actions" style="display: none;">
+              <button id="copy-all-teams-btn" class="btn btn-secondary btn-sm" title="Copy all teams summary to clipboard">
+                <span>📋</span> Copy All Teams
+              </button>
+              <button id="download-all-teams-btn" class="btn btn-secondary btn-sm" title="Download all teams report (.txt)">
+                <span>💾</span> Download All (.TXT)
+              </button>
+              <button id="batch-emails-view-btn" class="btn btn-primary btn-sm" title="Open Batch Personalized Emails list">
+                <span>📧</span> All Personalized Emails
+              </button>
+            </div>
+          </div>
+
+          <!-- Results Content Area -->
+          <div id="results-container" class="results-container">
+            <!-- Empty state for teams -->
+            <div class="empty-state" id="results-empty-state">
+              <div class="empty-illustration">🤖</div>
+              <h3 class="empty-title">No Teams Formed Yet</h3>
+              <p class="empty-desc">
+                Add participants and click <strong class="text-accent">"🤖 Generate Balanced Teams"</strong> above to intelligently assemble cross-functional hackathon squads.
+              </p>
+            </div>
+
+            <!-- Loading Skeleton / Animation for simulated AI -->
+            <div class="matching-loader-container hidden" id="matching-loader">
+              <div class="loader-spinner"></div>
+              <h3 class="loader-title">Simulating AI Matching...</h3>
+              <p class="loader-step" id="loader-status-text">Analyzing participant roles and skill vectors...</p>
+              <div class="loader-progress-bar">
+                <div class="loader-progress-fill" id="loader-progress-fill"></div>
+              </div>
+            </div>
+
+            <!-- Teams Grid -->
+            <div id="teams-grid" class="teams-grid hidden">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: Personalized Email Generator -->
+  <div id="email-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-header-icon">📧</span>
+          <div>
+            <h3 class="modal-title" id="modal-title">Personalized Assignment Email</h3>
+            <p class="modal-subtitle">Direct mailto: link ready to launch in your email client</p>
+          </div>
+        </div>
+        <button id="close-email-modal-btn" class="modal-close-btn" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Participant selector dropdown -->
+        <div class="form-group">
+          <label for="modal-participant-select" class="form-label">Select Recipient:</label>
+          <div class="select-wrapper">
+            <select id="modal-participant-select" class="form-control">
+              <!-- Dynamically populated with all participants -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Email Preview Card -->
+        <div class="email-preview-card">
+          <div class="email-field">
+            <span class="email-label">To:</span>
+            <span class="email-value" id="preview-recipient-email">recipient@example.com</span>
+          </div>
+          <div class="email-field">
+            <span class="email-label">Subject:</span>
+            <span class="email-value subject-value" id="preview-subject">
+              🎯 Your Hackathon Team Has Been Assigned!
+            </span>
+          </div>
+          <div class="email-body-preview-wrapper">
+            <span class="email-label">Message Body Preview:</span>
+            <pre class="email-body-preview" id="preview-email-body"></pre>
+          </div>
+        </div>
+
+        <div class="email-notice">
+          <span class="notice-icon">💡</span>
+          <span>
+            Clicking <strong>Send Email</strong> will open your native mail client (Gmail/Outlook/Apple Mail) via <code>mailto:</code> with recipient, subject, and body pre-filled. You can also copy the text directly!
+          </span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="copy-email-btn" class="btn btn-secondary">
+          <span>📋</span> Copy Email Text
+        </button>
+        <a id="mailto-link-btn" href="#" class="btn btn-magic" target="_blank" rel="noopener noreferrer">
+          <span>📧</span> Send Email Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Batch Email Broadcast Dashboard -->
+  <div id="batch-email-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="batch-modal-title">
+    <div class="modal-window modal-window-wide">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-header-icon">📨</span>
+          <div>
+            <h3 class="modal-title" id="batch-modal-title">Batch Email Dispatcher</h3>
+            <p class="modal-subtitle">Send personalized team assignments to each hacker via 1-click mailto: buttons</p>
+          </div>
+        </div>
+        <button id="close-batch-modal-btn" class="modal-close-btn" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="batch-instructions">
+          <p>
+            Review all participants below. Click the <strong>📧 Send Email</strong> button for any participant to trigger their pre-filled email client. No third-party email API or SMTP needed!
+          </p>
+        </div>
+        <div class="batch-list-wrapper">
+          <table class="batch-table">
+            <thead>
+              <tr>
+                <th>Participant</th>
+                <th>Assigned Team</th>
+                <th>Role</th>
+                <th>Email Address</th>
+                <th class="actions-header">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="batch-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="close-batch-footer-btn" class="btn btn-secondary">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Confirmation Dialog (Clear all, delete, etc.) -->
+  <div id="confirm-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-window modal-sm">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-header-icon">⚠️</span>
+          <h3 class="modal-title" id="confirm-modal-title">Confirm Action</h3>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-modal-message" class="confirm-message">
+          Are you sure you want to perform this action?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm-cancel-btn" class="btn btn-ghost">Cancel</button>
+        <button id="confirm-action-btn" class="btn btn-danger">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <p>
+        <strong>AI Hackathon Team Matcher</strong> — Built with pure HTML, CSS, and JavaScript.
+      </p>
+      <p class="footer-sub">
+        Simulated multi-objective heuristic solver for balanced hackathon squads. No external AI APIs or backends required.
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
